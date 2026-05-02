@@ -1,98 +1,158 @@
-# Multi-Format to PDF Converter System
+### Multi-Format PDF Converter
 
-A universal file-to-PDF converter that allows users to convert various file formats into a standardized PDF document.
+==========================
 
-## Supported Conversions
+A professional file-to-PDF conversion system with batch processing,
+drag-and-drop interface, and watermarking.
 
-- `.py` → `.pdf`
-- `.ipynb` → `.pdf`
-- `.c` → `.pdf`
-- `.html` → `.pdf`
 
-## Features
+SUPPORTED FILE FORMATS
+-----------------------
+  .py       Python source files (with line numbers)
+  .ipynb    Jupyter Notebooks (cells + outputs)
+  .c / .cpp C and C++ source files
+  .html     HTML files (rendered structure)
+  .txt      Plain text files
+  .java     Java source files
+  .js       JavaScript files
+  .css      CSS stylesheets
 
-- **File Upload**: Upload `.py`, `.ipynb`, `.c`, `.html` files with automatic file type detection
-- **Conversion Engine**: Convert files into structured PDF format while maintaining layout and formatting
-- **Syntax Highlighting**: Highlight code for `.py` and `.c` files to improve readability
-- **Preview System**: Preview PDF before downloading
-- **Download**: Export final PDF file
 
-## Project Structure
+REQUIREMENTS
+------------
+  Python 3.8+
+  pip
 
-```
-multi-to-pdf/
-│
-├── frontend/
-│   ├── upload.html
-│   └── preview.html
-│
-├── backend/
-│   ├── app.py
-│   │
-│   ├── converters/
-│   │   ├── py_to_pdf.py
-│   │   ├── ipynb_to_pdf.py
-│   │   ├── c_to_pdf.py
-│   │   └── html_to_pdf.py
-│   │
-│   ├── services/
-│   │   ├── syntax_highlighter.py
-│   │   └── pdf_generator.py
-│   │
-│   └── utils/
-│       └── file_handler.py
-│
-├── uploads/
-├── outputs/
-│
-├── requirements.txt
-└── README.md
-```
 
-## Technologies Used
-
-- **Backend**: Python (Flask)
-- **PDF Generation**: ReportLab, WeasyPrint
-- **Conversion**: nbconvert, Pygments, pdfkit / wkhtmltopdf
-- **Frontend**: HTML, CSS, JavaScript
-
-## Installation
+INSTALLATION
+------------
 
 1. Install Python dependencies:
-```bash
-pip install -r requirements.txt
-```
 
-2. Install wkhtmltopdf (for HTML to PDF conversion):
-   - Download from: https://wkhtmltopdf.org/downloads.html
-   - Add to system PATH
+    pip install flask flask-cors pypdf reportlab pygments werkzeug
 
-3. Run the Flask application:
-```bash
-python backend/app.py
-```
+   Or using requirements.txt:
 
-4. Open your browser and navigate to `http://localhost:5000`
+    pip install -r requirements.txt
 
-## Usage
 
-1. Open the upload page in your browser
-2. Select or drag-and-drop your file
-3. Click "Convert to PDF"
-4. Preview the generated PDF
-5. Download the PDF file
+RUNNING THE APPLICATION
+-----------------------
 
-## Example Use Cases
+Step 1 - Start the Flask backend:
 
-- Convert Python code → PDF for assignment submission
-- Convert Jupyter Notebook → PDF report
-- Convert C program → printable document
-- Convert HTML webpage → PDF for sharing
+    cd backend
+    python app.py
 
-## Future Enhancements
+    The server will start at: http://localhost:5000
+    You should see: Running on http://127.0.0.1:5000
 
-- Batch file conversion
-- Drag-and-drop interface
-- AI-based code formatting
-- Cloud storage integration
-- Watermark & password-protected PDFs
+Step 2 - Open the frontend:
+
+    Open frontend/index.html in any modern web browser.
+    Double-click the file or drag it into a browser window.
+
+
+USAGE
+-----
+
+1. The status indicator in the top-right shows "Server Online" when the
+   backend is connected.
+
+2. Drag files into the drop zone, or click to browse and select files.
+   Multiple files can be added at once.
+
+3. (Optional) Enable and configure the watermark in the right panel:
+   - Enter watermark text (e.g. "CONFIDENTIAL", "DRAFT")
+   - Choose position: center, top, bottom, corners
+   - Adjust opacity and font size with sliders
+
+4. Click "Convert N Files" to start batch conversion.
+   Each file shows its status: Pending, Converting, Done, or Error.
+
+5. Download individual PDFs from the Results panel on the right,
+   or click "Download ZIP" to get all converted files in one archive.
+
+
+PROJECT STRUCTURE
+-----------------
+
+  multi-pdf-converter/
+  |
+  +-- frontend/
+  |   +-- index.html              Single-page app (HTML + React)
+  |
+  +-- backend/
+  |   +-- app.py                  Flask API server
+  |   +-- converters/
+  |   |   +-- base_converter.py   Base class for all converters
+  |   |   +-- py_converter.py     Python to PDF
+  |   |   +-- ipynb_converter.py  Jupyter Notebook to PDF
+  |   |   +-- c_converter.py      C/C++ to PDF
+  |   |   +-- html_converter.py   HTML to PDF
+  |   |   +-- text_converter.py   Text/generic code to PDF
+  |   +-- services/
+  |   |   +-- batch_processor.py  Manages multi-file conversion
+  |   |   +-- watermark.py        Watermark overlay engine
+  |   +-- utils/
+  |       +-- file_handler.py     File system utilities
+  |
+  +-- uploads/                    Uploaded files (auto-created)
+  +-- outputs/                    Converted PDFs (auto-created)
+  +-- temp/                       Temporary files for ZIP (auto-created)
+  +-- requirements.txt
+  +-- README.md
+
+
+API ENDPOINTS
+-------------
+
+  GET  /api/health             Check server status
+  POST /api/upload             Upload one or more files
+  POST /api/convert            Convert uploaded files to PDF
+  GET  /api/download/<name>    Download a single PDF
+  POST /api/download-zip       Download multiple PDFs as ZIP
+  POST /api/cleanup            Delete uploaded/output files by ID
+
+
+WATERMARK OPTIONS
+-----------------
+
+  Text     : Any string (e.g. "CONFIDENTIAL", "DRAFT", "SUBMITTED")
+  Position : center, top, bottom, top-left, top-right, bottom-left, bottom-right
+  Opacity  : 5% to 90% (lower = lighter)
+  Font Size: 20 to 96pt
+
+
+TROUBLESHOOTING
+---------------
+
+  "Server Offline" shown in UI:
+    - Make sure you ran "python app.py" in the backend folder
+    - Check that port 5000 is not in use by another application
+    - Look for error messages in the terminal where Flask is running
+
+  File conversion fails:
+    - Check the error message shown in the file item
+    - Ensure the file is valid and not corrupted
+    - Check terminal output for Python stack traces
+
+  ZIP download does not start:
+    - Some browsers block automatic downloads; check the downloads bar
+    - Ensure at least one file was converted successfully
+
+  Port 5000 already in use:
+    - Change the port in backend/app.py:  app.run(port=5001)
+    - Update the API constant in frontend/index.html to match:
+        const API = 'http://localhost:5001/api';
+
+
+NOTES
+-----
+
+  - Files are stored in uploads/ and outputs/ during the session.
+    You can safely delete these folders to free up space.
+  - The maximum upload size is 50 MB per request.
+  - The frontend connects to http://localhost:5000 by default.
+    If you change the backend port, update the API constant at the
+    top of frontend/index.html accordingly.
